@@ -1,5 +1,14 @@
-var AngularDragDrop =
-/******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory(require("angular"));
+	else if(typeof define === 'function' && define.amd)
+		define(["angular"], factory);
+	else if(typeof exports === 'object')
+		exports["AngularDragDrop"] = factory(require("angular"));
+	else
+		root["AngularDragDrop"] = factory(root["angular"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -458,7 +467,7 @@ var AngularDragDrop =
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = angular;
+	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 
 /***/ },
 /* 2 */
@@ -709,3 +718,4 @@ var AngularDragDrop =
 
 /***/ }
 /******/ ])
+});

@@ -4,7 +4,7 @@ module.exports = {
   cache: true,
   entry: __dirname + "/src/angular-drag-drop.js",
   output: {
-    libraryTarget: "var",
+    libraryTarget: "umd",
     library: "AngularDragDrop",
     path: "./build",
     pathInfo: false,
@@ -12,7 +12,7 @@ module.exports = {
     filename: "drag-and-drop.js",
   },
   externals: {
-    angular: "angular",
+    angular: true,
   },
   module: {
     loaders: [
