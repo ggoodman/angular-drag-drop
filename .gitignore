@@ -1,0 +1,15 @@
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+*.swp
+*.swo
+.DS_Store
+
+node_modules
+bower_components
+

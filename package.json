@@ -1,0 +1,30 @@
+{
+  "name": "angular-drag-drop",
+  "version": "1.0.0",
+  "description": "Dependency-free drag and drop support in Angular.js",
+  "main": "./build/angular-drag-drop.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ggoodman/angular-drag-drop.git"
+  },
+  "keywords": [
+    "angular",
+    "angularjs",
+    "drag",
+    "drop"
+  ],
+  "author": "Geoffrey Goodman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ggoodman/angular-drag-drop/issues"
+  },
+  "homepage": "https://github.com/ggoodman/angular-drag-drop",
+  "devDependencies": {
+    "css-loader": "^0.9.0",
+    "exports-loader": "^0.6.2",
+    "ng-loader": "^1.0.0"
+  }
+}
