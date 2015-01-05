@@ -1,3 +1,6 @@
+require("./angular-drag-drop.css");
+
+
 var Angular = require("angular");
 
 module.exports =

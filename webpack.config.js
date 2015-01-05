@@ -2,11 +2,13 @@ var Webpack = require("webpack");
 
 module.exports = {
   cache: true,
-  entry: "./src/angular-drag-drop.js",
+  entry: __dirname + "/src/angular-drag-drop.js",
   output: {
     libraryTarget: "var",
     library: "AngularDragDrop",
     path: "./build",
+    pathInfo: false,
+    publicPath: "/static/",
     filename: "drag-and-drop.js",
   },
   externals: {
