@@ -4,7 +4,8 @@ require("./angular-drag-drop.css");
 var Angular = require("angular");
 
 module.exports =
-Angular.module("filearts.dragDrop")
+Angular.module("filearts.dragDrop", [
+])
 
 .factory("$dragging", [ function () {
   var data = null;

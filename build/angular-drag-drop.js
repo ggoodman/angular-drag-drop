@@ -51,7 +51,8 @@ var AngularDragDrop =
 	var Angular = __webpack_require__(1);
 
 	module.exports =
-	Angular.module("filearts.dragDrop")
+	Angular.module("filearts.dragDrop", [
+	])
 
 	.factory("$dragging", [ function () {
 	  var data = null;
