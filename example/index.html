@@ -1,0 +1,16 @@
+<!doctype html>
+
+<html ng-app="dragular">
+  <head>
+    <title>Angular Sliding Puzzle</title>
+    <script src="build/dragular.js"></script>
+  </head>
+  <body>
+    <div dragular-board>
+      <div class="dr-board-item" ng-repeat="piece in board.pieces" ng-switch="piece">
+        <div ng-switch-when="0" dragular-empty drop-container accepts="['text/x-dragular-piece']" on-drag-enter="board.swap($index, data)"></div>
+        <div ng-switch-default dragular-tile="piece" drag-container="piece" mime-type="text/x-dragular-piece"></div>
+      </div>
+    </div>
+  </body>
+</html>
