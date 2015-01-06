@@ -117,7 +117,7 @@
 	    
 	    try {
 	      e.dataTransfer.setData(dragContainer.type, dragContainer.data);
-	    } catch (e) {
+	    } catch (ex) {
 	      // Fallback for IE.. YAY!
 	      e.dataTransfer.setData("text", dragContainer.data);
 	    }
