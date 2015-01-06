@@ -115,7 +115,12 @@
 	    
 	    // console.log("handleDragStart", e);
 	    
-	    e.dataTransfer.setData(dragContainer.type, dragContainer.data);
+	    try {
+	      e.dataTransfer.setData(dragContainer.type, dragContainer.data);
+	    } catch (e) {
+	      // Fallback for IE.. YAY!
+	      e.dataTransfer.setData("text", dragContainer.data);
+	    }
 	    e.dataTransfer.effectAllowed = "move";
 	    e.dataTransfer.dropEffect = "move";
 	    
