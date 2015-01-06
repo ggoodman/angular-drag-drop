@@ -2,18 +2,45 @@
   box-sizing: border-box;
 }
 
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+  background-color: black;
+}
+
 .dr-board {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  min-height: 500px;
+  min-height: 100vmin;
+  
+  width: 500px;
+  width: 100vmin;
+  height: 500px;
+  height: 100vmin;
+  
+  background-color: whitesmoke;
+  border: 6px inset #eee;
 }
 
-.dr-tile.swappable:hover {
+.dr-tile-img.swappable:hover {
   opacity: 0.8;
   cursor: move;
 }
 
-.dr-tile canvas {
+.dr-tile-empty, .dr-tile-img {
   width: 100%;
   height: 100%;
+}
+
+.dr-tile-img {
+  border: 2px outset #eee;
+  background-clip: border-box;
+  background-size: contain;
 }

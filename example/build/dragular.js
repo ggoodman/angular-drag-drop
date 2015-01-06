@@ -44,219 +44,16 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(2);
+	__webpack_require__(3);
 
-	var Angular = __webpack_require__(8);
+	var Angular = __webpack_require__(10);
 
 	Angular.module("dragular", [
 	  __webpack_require__(1).name,
+	  
+	  __webpack_require__(2).name,
 	])
 
-	.constant("GRID", 3)
-	.constant("IMAGE", "http://s1.ibtimes.com/sites/www.ibtimes.com/files/styles/v2_article_large/public/2011/10/26/180060-a-pomeranian-dressed-as-zorro-the-spanish-masked-swordsman-in-the-movi.jpg")
-	.constant("TILE_SIZE", 100)
-
-	.directive("dragularBoard", ["GRID", "TILE_SIZE", function (GRID, TILE_SIZE) {
-	  var linkFn = function ($scope, $element, $attrs, board) {
-	    $element.addClass("dr-board");
-	    
-	    $element.css({
-	      width: GRID * TILE_SIZE + "px",
-	      height: GRID * TILE_SIZE + "px",
-	    });
-	    
-	    board.init();
-	  };
-	  
-	  
-	  return {
-	    restrict: "A",
-	    controller: "BoardController",
-	    controllerAs: "board",
-	    require: "dragularBoard",
-	    link: linkFn,
-	  };
-
-	}])
-
-	.controller("BoardController", ["$rootElement", "$rootScope", "GRID", "IMAGE", "TILE_SIZE", function ($rootElement, $rootScope, GRID, IMAGE, TILE_SIZE) {
-	  var board = this;
-
-	  board.pieces = [];
-	  board.tiles = [];
-	  
-	  board.init = function () {
-	    
-	    var img = Angular.element(document.createElement("img"));
-	    
-	    // Source: http://stackoverflow.com/questions/21933043/split-an-image-using-javascript
-	    var getClippedRegion = function (image, x, y, width, height) {
-	      var canvas = document.createElement("canvas");
-	      var ctx = canvas.getContext("2d");
-	      
-	      canvas.width = TILE_SIZE;
-	      canvas.height = TILE_SIZE;
-	      
-	      //                   source region         dest. region
-	      ctx.drawImage(image, x, y, width, height,  0, 0, TILE_SIZE, TILE_SIZE);
-	  
-	      return canvas;
-	    };
-	    
-	    var onImageLoaded = function (e) {
-	      var el = img[0];
-	      var size = Math.min(el.width, el.height);
-	      var tileSize = Math.floor(size / GRID);
-	      
-	      console.log("Image loaded", size);
-	      
-	      for (var x = 0; x < GRID; x++) {
-	        for (var y = 0; y < GRID; y++) {
-	          board.pieces[y * GRID + x] = y * GRID + x;
-	          board.tiles[y * GRID + x] = getClippedRegion(el, x * tileSize, y * tileSize, tileSize, tileSize);
-	        }
-	      }
-	      
-	      board.randomize(8);
-	      
-	      $rootScope.$digest();
-	    };
-	    
-	    img.css({display: "none"});
-	    img.on("load", onImageLoaded);
-	    img.attr("src", IMAGE);
-	    
-	    $rootElement.append(img);
-	    
-	  };
-	  
-	  board.posToIndex = function (posX, posY) {
-	    var pos = Angular.isObject(posX) ? posX : {
-	      x: posX,
-	      y: posY,
-	    };
-	    
-	    return pos.y * GRID + pos.x;
-	  };
-	  
-	  board.indexToPos = function (idx) {
-	    var y = Math.floor(idx / GRID);
-	    
-	    return {
-	      x: idx - y * GRID,
-	      y: y
-	    };
-	  };
-	  
-	  board.randomize = function (iterations) {
-	    var emptyIdx = board.pieces.indexOf(0);
-	    
-	    for (var i = 0; i < iterations; i++) {
-	      var moves = [];
-	      var emptyPos = board.indexToPos(emptyIdx);
-	      
-	      if (emptyPos.x > 0) moves.push({x: -1, y: 0});
-	      if (emptyPos.y > 0) moves.push({x: 0, y: -1});
-	      if (emptyPos.x < GRID) moves.push({x: 1, y: 0});
-	      if (emptyPos.y < GRID) moves.push({x: 0, y: 1});
-	      
-	      var moveIdx = Math.floor(Math.random() * moves.length);
-	      var move = moves[moveIdx];
-	      var targetIdx = board.posToIndex(emptyPos.x + move.x, emptyPos.y + move.y);
-	      var target = board.pieces[targetIdx];
-	      
-	      board.swap(emptyIdx, target);
-	      
-	      emptyIdx = targetIdx;
-	    }
-	    
-	    console.log(board.pieces);
-	  };
-	  
-	  board.isAdjacent = function (idxA, idxB) {
-	    return Math.abs(idxA - idxB) === GRID || Math.abs(idxA - idxB) === 1;
-	  };
-	  
-	  board.swap = function (emptyIdx, piece) {
-	    var pieceIdx = board.pieces.indexOf(piece);
-	    
-	    if (pieceIdx >= 0 && board.isAdjacent(emptyIdx, pieceIdx)) {
-	      board.pieces[emptyIdx] = piece;
-	      board.pieces[pieceIdx] = 0;
-	      
-	      return true;
-	    }
-	    console.log("swap", emptyIdx, pieceIdx, piece);
-	  };
-	  
-	}])
-
-	.directive("dragularTile", ["TILE_SIZE", function (TILE_SIZE) {
-	  var linkFn = function ($scope, $element, $attrs, ctls) {
-	    var board = ctls[0];
-	    var tile = ctls[1];
-	    
-	    var handleMouseEnter = function () {
-	      if (board.isAdjacent(board.pieces.indexOf($scope.tile), board.pieces.indexOf(0))) {
-	        $element.addClass("swappable");
-	      }
-	    };
-	    
-	    var handleMouseLeave = function () {
-	      $element.removeClass("swappable");
-	    };
-	    
-	    $element.addClass("dr-tile");
-	    $element.css({
-	      width: TILE_SIZE + "px",
-	      height: TILE_SIZE + "px",
-	    });
-	    
-	    $element.on("mouseenter", handleMouseEnter);
-	    $element.on("mouseleave", handleMouseLeave);
-	    
-	    $element.append(board.tiles[$scope.tile]);
-	  };
-	  
-	  return {
-	    restrict: "A",
-	    controller: "TileController",
-	    controllerAs: "tile",
-	    scope: {
-	      tile: "=dragularTile"
-	    },
-	    require: ["^dragularBoard", "dragularTile"],
-	    link: linkFn,
-	  };
-	}])
-
-	.controller("TileController", [ function () {
-	  var tile = this;
-	}])
-
-	.directive("dragularEmpty", ["TILE_SIZE", function (TILE_SIZE) {
-	  var linkFn = function ($scope, $element, $attrs, ctls) {
-	    var board = ctls[0];
-	    var empty = ctls[1];
-	    
-	    $element.addClass("dr-tile dr-tile-empty");
-	    $element.css({
-	      width: TILE_SIZE + "px",
-	      height: TILE_SIZE + "px",
-	    });
-	  };
-	  
-	  return {
-	    restrict: "A",
-	    controller: "TileController",
-	    controllerAs: "tile",
-	    scope: {
-	      tile: "=dragularEmpty"
-	    },
-	    require: ["^dragularBoard", "dragularEmpty"],
-	    link: linkFn,
-	  };
-	}])
 
 	;
 
@@ -264,10 +61,10 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(5);
+	__webpack_require__(6);
 
 
-	var Angular = __webpack_require__(8);
+	var Angular = __webpack_require__(10);
 
 	module.exports =
 	Angular.module("filearts.dragDrop", [
@@ -677,13 +474,69 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var Angular = __webpack_require__(10);
+
+	module.exports =
+	Angular.module("dragular.controllers.game", [
+	  __webpack_require__(8).name,
+	])
+
+	.config(["$locationProvider", function ($locationProvider) {
+	  $locationProvider.html5Mode({
+	    enabled: true,
+	    requireBase: false
+	  });
+	}])
+
+	.controller("GameController", ["$location", "$scope", "board", function ($location, $scope, board) {
+	  var game = this;
+	  var defaultImgUrl = "http://s1.ibtimes.com/sites/www.ibtimes.com/files/styles/v2_article_large/public/2011/10/26/180060-a-pomeranian-dressed-as-zorro-the-spanish-masked-swordsman-in-the-movi.jpg";
+	  var params = $location.search();
+	  var clearWinListener;
+	  
+	  var watchForWin = function () {
+	    if (clearWinListener) clearWinListener();
+	    
+	    clearWinListener = $scope.$watchCollection("game.board.pieces", function (pieces) {
+	      if (pieces.reduce(function (winning, pieceNum, pieceIdx) {
+	        return winning && pieceNum === pieceIdx;
+	      }, true)) {
+	        alert("You won in " + game.moves + " moves at difficulty " + game.board.difficulty + "!");
+	        
+	        init();
+	      }
+	    });
+	  };
+	  
+	  var init = function () {
+	    game.moves = 0;
+	    
+	    game.board.init(params.img || defaultImgUrl, parseInt(params.grid, 10) || 4, parseInt(params.difficulty, 10) || 30)
+	      .then(watchForWin);  
+	  };
+
+	  game.board = board;
+	  
+	  game.move = function (idxA, idxB) {
+	    if (game.board.swap(idxA, idxB)) game.moves++;
+	  };
+	  
+	  init();
+	}])
+
+	;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(3);
+	var content = __webpack_require__(4);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(4)(content, {});
+	var update = __webpack_require__(5)(content, {});
 	// Hot Module Replacement
 	if(false) {
 		// When the styles change, update the <style> tags
@@ -697,14 +550,14 @@
 	}
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(7)();
-	exports.push([module.id, "* {\n  box-sizing: border-box;\n}\n\n.dr-board {\n  display: flex;\n  flex-direction: row;\n  flex-wrap: wrap;\n}\n\n.dr-tile.swappable:hover {\n  opacity: 0.8;\n  cursor: move;\n}\n\n.dr-tile canvas {\n  width: 100%;\n  height: 100%;\n}", ""]);
+	exports = module.exports = __webpack_require__(9)();
+	exports.push([module.id, "* {\n  box-sizing: border-box;\n}\n\nbody {\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  \n  background-color: black;\n}\n\n.dr-board {\n  display: flex;\n  flex-direction: row;\n  flex-wrap: wrap;\n  min-height: 500px;\n  min-height: 100vmin;\n  \n  width: 500px;\n  width: 100vmin;\n  height: 500px;\n  height: 100vmin;\n  \n  background-color: whitesmoke;\n  border: 6px inset #eee;\n}\n\n.dr-tile-img.swappable:hover {\n  opacity: 0.8;\n  cursor: move;\n}\n\n.dr-tile-empty, .dr-tile-img {\n  width: 100%;\n  height: 100%;\n}\n\n.dr-tile-img {\n  border: 2px outset #eee;\n  background-clip: border-box;\n  background-size: contain;\n}", ""]);
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -900,16 +753,16 @@
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(6);
+	var content = __webpack_require__(7);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(4)(content, {});
+	var update = __webpack_require__(5)(content, {});
 	// Hot Module Replacement
 	if(false) {
 		// When the styles change, update the <style> tags
@@ -923,14 +776,152 @@
 	}
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(7)();
+	exports = module.exports = __webpack_require__(9)();
 	exports.push([module.id, "[drag-container] {\n    -khtml-user-drag: element;\n    -webkit-user-drag: element;\n    -khtml-user-select: none;\n    -moz-user-select: none;\n    -webkit-user-select: none;\n    user-drag: element;\n    user-select: none;\n}\n\n[drop-container] {\n    position: relative;\n}\n\n[drop-target] {\n    position: absolute;\n    display: none;\n}\n[drop-target].drop-target-active {\n    display: block;\n    pointer-events: none;\n}\n\n.drop-target-center {\n    top: 0;\n    right: 0;\n    bottom: 0;\n    left: 0;\n}\n\n.drop-target-top {\n    top: 0;\n    right: 0;\n    height: 50%;\n    left: 0;\n}\n\n.drop-target-top-right {\n    top: 0;\n    right: 0;\n    height: 50%;\n    width: 50%;\n}\n\n.drop-target-right {\n    top: 0;\n    right: 0;\n    bottom: 0;\n    width: 50%;\n}\n\n.drop-target-bottom-right {\n    height: 50%;\n    right: 0;\n    bottom: 0;\n    width: 50%;\n}\n\n.drop-target-bottom {\n    height: 50%;\n    right: 0;\n    bottom: 0;\n    left: 0;\n}\n\n.drop-target-bottom-left {\n    height: 50%;\n    width: 50%;\n    bottom: 0;\n    left: 0;\n}\n\n.drop-target-left {\n    top: 0;\n    right: 50%;\n    bottom: 0;\n    left: 0;\n}\n\n.drop-target-top-left {\n    top: 0;\n    width: 50%;\n    height: 50%;\n    left: 0;\n}", ""]);
 
 /***/ },
-/* 7 */
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Angular = __webpack_require__(10);
+
+	module.exports =
+	Angular.module("dragular.controllers.board", [
+	])
+
+	.factory("board", ["$document", "$q", function ($document, $q) {
+	  var board = {};
+	  
+	  var loadImage = function (imgUrl) {
+	    var dfd = $q.defer();
+	    var img = new Image();
+	    
+	    var handleImageLoad = function (e) {
+	      dfd.resolve(img);
+	    };
+	    
+	    var handleImageError = function (e) {
+	      dfd.reject(e);
+	    };
+
+	    img.onload = handleImageLoad;
+	    img.onerror = handleImageError;
+	    img.crossOrigin = "anonymous";
+	    img.src = imgUrl;
+	    
+	    return dfd.promise;
+	  };
+	  
+	  var createTiles = function (img) {
+	    var size = Math.min(img.width, img.height);
+	    var tileSize = Math.floor(size / board.grid);
+	    
+	    for (var x = 0; x < board.grid; x++) {
+	      for (var y = 0; y < board.grid; y++) {
+	        var canvas = document.createElement("canvas");
+	        var ctx = canvas.getContext("2d");
+	        
+	        canvas.width = tileSize;
+	        canvas.height = tileSize;
+	        
+	        ctx.drawImage(img, x * tileSize, y * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize);
+	        
+	        board.tiles[y * board.grid + x] = canvas.toDataURL();
+	      }
+	    }
+	    
+	    return board.tiles;
+	  };
+	  
+
+	  board.init = function (imgUrl, grid, difficulty) {
+	    board.imgUrl = imgUrl;
+	    board.grid = grid || 3;
+	    board.difficulty = difficulty || 16;
+	    board.pieces = Array.apply(0, Array(board.grid * board.grid)).map(function(v, k) { return k; });
+	    board.tiles = Array.apply(0, Array(board.grid * board.grid));
+	    
+	    return loadImage(board.imgUrl)
+	      .then(createTiles)
+	      .then(board.shuffle.bind(board));
+	  };
+	  
+	  board.shuffle = function () {
+	    var possibleMoves = [];
+	    var lastSwap = -1;
+	    
+	    for (var i = 0; i < board.difficulty; i++) {
+	      var emptyIdx = board.pieces.indexOf(0);
+	      var emptyPos = board.indexToPos(emptyIdx);
+	      
+	      possibleMoves.length = 0;
+	      
+	      if (emptyPos.x > 0) possibleMoves.push(emptyIdx - 1);
+	      if (emptyPos.y > 0) possibleMoves.push(emptyIdx - board.grid);
+	      if (emptyPos.x < board.grid - 1) possibleMoves.push(emptyIdx + 1);
+	      if (emptyPos.y < board.grid - 1) possibleMoves.push(emptyIdx + board.grid);
+	      
+	      possibleMoves = possibleMoves.filter(function (targetIdx) { return targetIdx !== lastSwap; });
+	      
+	      var moveIdx = Math.floor(Math.random() * possibleMoves.length);
+	      var targetIdx = possibleMoves[moveIdx];
+	      
+	      if (targetIdx >= board.pieces.length || emptyIdx >= board.pieces.length) debugger;
+	      
+	      board.pieces[emptyIdx] = board.pieces[targetIdx];
+	      board.pieces[targetIdx] = 0;
+	      
+	      lastSwap = emptyIdx;
+	    }
+	    
+	    return board.pieces;
+	  };
+
+	  board.posToIndex = function (posX, posY) {
+	    var pos = Angular.isObject(posX) ? posX : {
+	      x: posX,
+	      y: posY,
+	    };
+	    
+	    return pos.y * board.grid + pos.x;
+	  };
+	  
+	  board.indexToPos = function (idx) {
+	    var x = idx % board.grid;
+	    var y = Math.floor(idx / board.grid);
+	    
+	    return {
+	      x: x,
+	      y: y
+	    };
+	  };
+	  
+	  board.isAdjacent = function (idxA, idxB) {
+	    return Math.abs(idxA - idxB) === 1 || Math.abs(idxA - idxB) === board.grid;
+	  };
+	  
+	  board.swap = function (idxA, idxB) {
+	    if (!board.isAdjacent(idxA, idxB)) return;
+	    
+	    var tmp = board.pieces[idxA];
+	    
+	    board.pieces[idxA] = board.pieces[idxB];
+	    board.pieces[idxB] = tmp;
+	    
+	    return true;
+	  };
+	  
+	  return board;
+	  
+	}])
+
+	;
+
+/***/ },
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function() {
@@ -951,7 +942,7 @@
 	}
 
 /***/ },
-/* 8 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**

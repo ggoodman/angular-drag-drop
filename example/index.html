@@ -6,11 +6,36 @@
     <script src="build/dragular.js"></script>
   </head>
   <body>
-    <div dragular-board>
-      <div class="dr-board-item" ng-repeat="piece in board.pieces" ng-switch="piece">
-        <div ng-switch-when="0" dragular-empty drop-container accepts="['text/x-dragular-piece']" on-drag-enter="board.swap($index, data)"></div>
-        <div ng-switch-default dragular-tile="piece" drag-container="piece" mime-type="text/x-dragular-piece"></div>
-      </div>
+    <div class="dr-board" ng-controller="GameController as game">
+      <div class="dr-tile"
+        ng-repeat="piece in game.board.pieces"
+        ng-style="
+          {
+            'width': 100/game.board.grid + '%',
+            'height': 100/game.board.grid + '%',
+          }
+        "
+        ng-switch="piece"
+      >
+        <div class="dr-tile-empty" ng-switch-when="0"
+          drop-container
+          accepts="['text/x-dragular-piece']"
+          on-drag-enter="game.move($index, game.board.pieces.indexOf(data))"
+        ></div>
+        <div class="dr-tile-img" ng-switch-default
+          ng-class="
+            {
+              'swappable': game.board.isAdjacent($index, game.board.pieces.indexOf(0))
+            }
+          "
+          ng-style="
+            {
+              'background-image': 'url(' + game.board.tiles[piece] + ')',
+            }
+          "
+          drag-container="piece"
+          mime-type="text/x-dragular-piece"></div>
+      </div>     
     </div>
   </body>
 </html>

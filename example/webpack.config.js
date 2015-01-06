@@ -16,16 +16,15 @@ module.exports = {
       { test: /\.css$/,   loader: "style-loader!css-loader" },
     ],
     noParse: [
-      /[\/\\]angular\.js$/,
-      /[\/\\]angular-animate\.js$/,
+      /[\/\\]bower_components[\/\\]/,
     ]
   },
   resolve: {
     modulesDirectories: ["node_modules", "bower_components", "src"],
     root: __dirname,
     alias: {
-      'angular': "angular/angular.js",
-      'angular-animate': "angular-animate/angular-animate.js",
+      // 'angular': "angular/angular.js",
+      // 'angular-animate': "angular-animate/angular-animate.js",
     },
   },
 };
