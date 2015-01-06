@@ -1,5 +1,7 @@
 # Angular drag-and-drop
 
+[DEMO](https://rawgit.com/ggoodman/angular-drag-drop/master/example/index.html)
+
 The idea of this directive is that often you might want to define different
 behaviour when you drop an element on a different *part* of the target. You
 might, for example, want to insert the item above or below the target in a
