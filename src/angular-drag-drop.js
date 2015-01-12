@@ -19,14 +19,17 @@ Angular.module("filearts.dragDrop", [
   };
 }])
 
-.directive("dragContainer", [ function () {
+.directive("dragContainer", ["$parse", function ($parse) {
   return {
     restrict: "A",
     require: "dragContainer",
     controller: "DragContainerController",
     controllerAs: "dragContainer",
     link: function ($scope, $element, $attrs, dragContainer) {
-      dragContainer.init($element);
+      dragContainer.init($element, $scope, {
+        onDragStart: $parse($attrs.onDragStart),
+        onDragEnd: $parse($attrs.onDragEnd),
+      });
       
       $element.on("dragstart", dragContainer.handleDragStart.bind(dragContainer));
       $element.on("dragend", dragContainer.handleDragEnd.bind(dragContainer));
@@ -43,8 +46,10 @@ Angular.module("filearts.dragDrop", [
 .controller("DragContainerController", ["$dragging", function ($dragging) {
   var dragContainer = this;
   
-  dragContainer.init = function (el) {
+  dragContainer.init = function (el, scope, callbacks) {
     dragContainer.el = el;
+    dragContainer.scope = scope;
+    dragContainer.callbacks = callbacks;
   };
   
   dragContainer.handleDragStart = function (e) {
@@ -66,6 +71,10 @@ Angular.module("filearts.dragDrop", [
     
     $dragging.setData(dragContainer.data);
     $dragging.setType(dragContainer.type);
+
+    if (dragContainer.callbacks.onDragStart) {
+      dragContainer.callbacks.onDragStart(dragContainer.scope, {$event: e});
+    }
   };
   
   dragContainer.handleDragEnd = function (e) {
@@ -78,6 +87,10 @@ Angular.module("filearts.dragDrop", [
     
     $dragging.setData(null);
     $dragging.setType(null);
+
+    if (dragContainer.callbacks.onDragEnd) {
+      dragContainer.callbacks.onDragEnd(dragContainer.scope, {$event: e});
+    }
   };
   
   dragContainer.updateDragData = function (data) {
@@ -265,7 +278,7 @@ Angular.module("filearts.dragDrop", [
     if (e.originalEvent) e = e.originalEvent;
     
     // console.log("dropContainer.handleDragOver", e);
-    
+
     if (!dropContainer.accepts || dropContainer.accepts.indexOf($dragging.getType()) >= 0) {
       e.preventDefault();
     } else {
