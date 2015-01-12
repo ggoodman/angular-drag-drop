@@ -328,7 +328,7 @@
 	    if (e.originalEvent) e = e.originalEvent;
 	    
 	    // console.log("dropContainer.handleDragOver", e);
-	    
+
 	    if (!dropContainer.accepts || dropContainer.accepts.indexOf($dragging.getType()) >= 0) {
 	      e.preventDefault();
 	    } else {
