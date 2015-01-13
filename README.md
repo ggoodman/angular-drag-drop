@@ -1,60 +1,146 @@
-# Angular drag-and-drop
+Angular drag-and-drop
+=====================
 
-[DEMO](https://rawgit.com/ggoodman/angular-drag-drop/master/example/index.html)
+Declarative drag and drop with zero dependencies in Angular.js
 
-The idea of this directive is that often you might want to define different
-behaviour when you drop an element on a different *part* of the target. You
-might, for example, want to insert the item above or below the target in a
-list if it is on the top or bottom of the target element. However, if the
-drop happens near the middle of the target element, you might want the item
-being dropped to become a child of the target. These directives allow you to
-define that behaviour in a declarative way.
+Copyright (C) 2015, Geoff Goodman (https://github.com/ggoodman)
 
-Angular drag and drop defines a set of three `attribute` directives to 
-facilitate creating drag and drop systems.
 
-In the basic case, three things are needed:
 
-1. Mark draggable content with the directive `drag-container`.
-2. Mark a droppable area with the directive `drop-container`.
-3. Add at least one child of the `drop-container`
-   with the directive `drop-target`. This directive accepts the
-   `on-drop` handler.
+Installation
+------------
+
+Several installation options:
+* Bower: `bower install ggoodman/angular-drag-drop --save`
+* Download from github: [angular-drag-drop.min.js](https://raw.github.com/ggoodman/angular-drag-drop/master/dist/angular-drag-drop.min.js)
+
+
+
+Demo
+----
+
+[Dragular](http://bit.ly/17E25d2) - Drag tiles around like the famous
+[Sliding Puzzle](http://en.wikipedia.org/wiki/Sliding_puzzle) using angular drag and drop.
+
+Usage
+-----
+
+Include angular-load.js in your application.
+
+```html
+<script src="bower_components/angular-drag-drop/angular-drag-drop.js"></script>
+```
+
+Add the module `filearts.dragDrop` as a dependency to your app module:
+
+```js
+var myapp = angular.module('myapp', ['filearts.dragDrop']);
+```
+
+
 
 ### `drag-container`
 
-Any element with this attribute will become draggable.
+Define a DOM element that will become draggable and determines what the data associated with the drag event is.
 
-TODO: Add a system to allow the container to define the type(s) and data
-to attach to drag events.
+**Example**
+
+```html
+<div drag-container="model"
+  mime-type="text/plain" <!-- optional -->
+  on-drag-start="onDragStart($event, data)" <!-- optional -->
+  on-drag-end="onDragEnd($event, data)" <!-- optional -->
+></div>
+```
+
+Attribute | Required? | Description
+----------|-----------|------------
+`drag-container` | Yes | Set the scope model to associate with dragging the selected element
+`mime-type` | No | Set the mime type of the model data being dragged
+
+The following callbacks are optional. Each can allow you to inject two special objects, `$event` and `data`:
+* `on-drag-start`
+* `on-drag-end`
+
+
 
 ### `drop-container`
 
-Add this attribute to a container element that should receive drop events. This
-directive is not enough to operate alone. It exists to encapsulate drop
-*target(s)* to define the area over which dropping is permitted and to form
-the basis for calculating which specific drop *target* is activated.
+Define a DOM element that will accept draggable elements that match the acceptable mime types.
+
+**Example**
+
+```html
+<div drop-container
+  accepts="['text/plain']" <!-- optional -->
+  on-drag-enter="onDragStartEnter($event, data)" <!-- optional -->
+  on-drag-over="onDragOver($event, data)" <!-- optional -->
+  on-drag-leave="onDragLeave($event, data)" <!-- optional -->
+  on-drop="onDrop($event, data)" <!-- optional -->
+></div>
+```
+
+Attribute | Required? | Description
+----------|-----------|------------
+`accepts` | No | Define an array of or single string representing acceptable mime-types to be dropped
+
+The following callbacks are optional. Each can allow you to inject two special objects, `$event` and `data`:
+* `on-drag-enter`
+* `on-drag-over`
+* `on-drag-leave`
+* `on-drop`
+
+
 
 ### `drop-target`
 
-**Note: Must be a child of a `drop-container`**
+Define a region of the parent `drop-container` that can independently accept drag and drop events.
 
-Defines a *target* region of the parent `drop-container` that can receive
-drop events. The allowed targets are:
+**Must be a child of a `drop-container`**
 
-* center
-* top
-* top-right
-* right
-* bottom-right
-* bottom
-* bottom-left
-* left
-* top-left
+**Example**
 
-If a `drop-target` does not indicate a *target* via the `target`
-attribute, the default, `center` target is used.
+```html
+<div drop-target="top-right"
+  on-drag-enter="onDragStartEnter($event, data)" <!-- optional -->
+  on-drag-over="onDragOver($event, data)" <!-- optional -->
+  on-drag-leave="onDragLeave($event, data)" <!-- optional -->
+  on-drop="onDrop($event, data)" <!-- optional -->
+></div>
+```
 
-You can define a callback handler using the `on-drop` attribute. The `$event`
-and `target` can be injected into this handler.
+Attribute | Required? | Description
+----------|-----------|------------
+`drop-target` | Yes | Defines the region of the parent `drop-container` that will accept events. Can be one of: `center`, `top`, `top-right`, `right`, `bottom-right`, `bottom`, `bottom-left`, `left`, `top-left`
 
+The following callbacks are optional. Each can allow you to inject two special objects, `$event` and `data`:
+* `on-drag-enter`
+* `on-drag-over`
+* `on-drag-leave`
+* `on-drop`
+
+
+
+License
+-------
+
+Released under the terms of MIT License:
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
