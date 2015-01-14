@@ -112,7 +112,8 @@ Angular.module("dragular.controllers.board", [
   };
   
   board.isAdjacent = function (idxA, idxB) {
-    return Math.abs(idxA - idxB) === 1 || Math.abs(idxA - idxB) === board.grid;
+    return (Math.floor(idxA / board.grid) === Math.floor(idxB / board.grid) && Math.abs(idxA - idxB) === 1)
+      || Math.abs(idxA - idxB) === board.grid;
   };
   
   board.swap = function (idxA, idxB) {
