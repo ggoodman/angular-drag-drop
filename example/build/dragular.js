@@ -46,7 +46,7 @@
 
 	__webpack_require__(3);
 
-	var Angular = __webpack_require__(10);
+	var Angular = __webpack_require__(7);
 
 	Angular.module("dragular", [
 	  __webpack_require__(1).name,
@@ -61,10 +61,10 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(6);
+	__webpack_require__(8);
 
 
-	var Angular = __webpack_require__(10);
+	var Angular = __webpack_require__(7);
 
 	module.exports =
 	Angular.module("filearts.dragDrop", [
@@ -82,14 +82,17 @@
 	  };
 	}])
 
-	.directive("dragContainer", [ function () {
+	.directive("dragContainer", ["$parse", function ($parse) {
 	  return {
 	    restrict: "A",
 	    require: "dragContainer",
 	    controller: "DragContainerController",
 	    controllerAs: "dragContainer",
 	    link: function ($scope, $element, $attrs, dragContainer) {
-	      dragContainer.init($element);
+	      dragContainer.init($element, $scope, {
+	        onDragStart: $parse($attrs.onDragStart),
+	        onDragEnd: $parse($attrs.onDragEnd),
+	      });
 	      
 	      $element.on("dragstart", dragContainer.handleDragStart.bind(dragContainer));
 	      $element.on("dragend", dragContainer.handleDragEnd.bind(dragContainer));
@@ -106,8 +109,10 @@
 	.controller("DragContainerController", ["$dragging", function ($dragging) {
 	  var dragContainer = this;
 	  
-	  dragContainer.init = function (el) {
+	  dragContainer.init = function (el, scope, callbacks) {
 	    dragContainer.el = el;
+	    dragContainer.scope = scope;
+	    dragContainer.callbacks = callbacks;
 	  };
 	  
 	  dragContainer.handleDragStart = function (e) {
@@ -129,6 +134,10 @@
 	    
 	    $dragging.setData(dragContainer.data);
 	    $dragging.setType(dragContainer.type);
+
+	    if (dragContainer.callbacks.onDragStart) {
+	      dragContainer.callbacks.onDragStart(dragContainer.scope, {$event: e});
+	    }
 	  };
 	  
 	  dragContainer.handleDragEnd = function (e) {
@@ -141,6 +150,10 @@
 	    
 	    $dragging.setData(null);
 	    $dragging.setType(null);
+
+	    if (dragContainer.callbacks.onDragEnd) {
+	      dragContainer.callbacks.onDragEnd(dragContainer.scope, {$event: e});
+	    }
 	  };
 	  
 	  dragContainer.updateDragData = function (data) {
@@ -479,11 +492,11 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Angular = __webpack_require__(10);
+	var Angular = __webpack_require__(7);
 
 	module.exports =
 	Angular.module("dragular.controllers.game", [
-	  __webpack_require__(8).name,
+	  __webpack_require__(6).name,
 	])
 
 	.config(["$locationProvider", function ($locationProvider) {
@@ -558,7 +571,7 @@
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(9)();
+	exports = module.exports = __webpack_require__(10)();
 	exports.push([module.id, "* {\n  box-sizing: border-box;\n}\n\nbody {\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  \n  background-color: black;\n}\n\n.dr-board {\n  display: flex;\n  flex-direction: row;\n  flex-wrap: wrap;\n  min-height: 500px;\n  min-height: 100vmin;\n  \n  width: 500px;\n  width: 100vmin;\n  height: 500px;\n  height: 100vmin;\n  \n  background-color: whitesmoke;\n  border: 6px inset #eee;\n}\n\n.dr-tile-img.swappable:hover {\n  opacity: 0.8;\n  cursor: move;\n}\n\n.dr-tile-empty, .dr-tile-img {\n  width: 100%;\n  height: 100%;\n}\n\n.dr-tile-img {\n  border: 2px outset #eee;\n  background-clip: border-box;\n  background-size: contain;\n}", ""]);
 
 /***/ },
@@ -761,37 +774,7 @@
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(7);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(5)(content, {});
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		module.hot.accept("!!/home/filearts/workspace/angular-drag-drop/node_modules/css-loader/index.js!/home/filearts/workspace/angular-drag-drop/src/angular-drag-drop.css", function() {
-			var newContent = require("!!/home/filearts/workspace/angular-drag-drop/node_modules/css-loader/index.js!/home/filearts/workspace/angular-drag-drop/src/angular-drag-drop.css");
-			if(typeof newContent === 'string') newContent = [module.id, newContent, ''];
-			update(newContent);
-		});
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(9)();
-	exports.push([module.id, "[drag-container] {\n    -khtml-user-drag: element;\n    -webkit-user-drag: element;\n    -khtml-user-select: none;\n    -moz-user-select: none;\n    -webkit-user-select: none;\n    user-drag: element;\n    user-select: none;\n}\n\n[drop-container] {\n    position: relative;\n}\n\n[drop-target] {\n    position: absolute;\n    display: none;\n}\n[drop-target].drop-target-active {\n    display: block;\n    pointer-events: none;\n}\n\n.drop-target-center {\n    top: 0;\n    right: 0;\n    bottom: 0;\n    left: 0;\n}\n\n.drop-target-top {\n    top: 0;\n    right: 0;\n    height: 50%;\n    left: 0;\n}\n\n.drop-target-top-right {\n    top: 0;\n    right: 0;\n    height: 50%;\n    width: 50%;\n}\n\n.drop-target-right {\n    top: 0;\n    right: 0;\n    bottom: 0;\n    width: 50%;\n}\n\n.drop-target-bottom-right {\n    height: 50%;\n    right: 0;\n    bottom: 0;\n    width: 50%;\n}\n\n.drop-target-bottom {\n    height: 50%;\n    right: 0;\n    bottom: 0;\n    left: 0;\n}\n\n.drop-target-bottom-left {\n    height: 50%;\n    width: 50%;\n    bottom: 0;\n    left: 0;\n}\n\n.drop-target-left {\n    top: 0;\n    right: 50%;\n    bottom: 0;\n    left: 0;\n}\n\n.drop-target-top-left {\n    top: 0;\n    width: 50%;\n    height: 50%;\n    left: 0;\n}", ""]);
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Angular = __webpack_require__(10);
+	var Angular = __webpack_require__(7);
 
 	module.exports =
 	Angular.module("dragular.controllers.board", [
@@ -905,7 +888,8 @@
 	  };
 	  
 	  board.isAdjacent = function (idxA, idxB) {
-	    return Math.abs(idxA - idxB) === 1 || Math.abs(idxA - idxB) === board.grid;
+	    return (Math.floor(idxA / board.grid) === Math.floor(idxB / board.grid) && Math.abs(idxA - idxB) === 1)
+	      || Math.abs(idxA - idxB) === board.grid;
 	  };
 	  
 	  board.swap = function (idxA, idxB) {
@@ -926,28 +910,7 @@
 	;
 
 /***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function() {
-		var list = [];
-		list.toString = function toString() {
-			var result = [];
-			for(var i = 0; i < this.length; i++) {
-				var item = this[i];
-				if(item[2]) {
-					result.push("@media " + item[2] + "{" + item[1] + "}");
-				} else {
-					result.push(item[1]);
-				}
-			}
-			return result.join("");
-		};
-		return list;
-	}
-
-/***/ },
-/* 10 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -27023,6 +26986,57 @@
 
 	/*** EXPORTS FROM exports-loader ***/
 	module.exports = window.angular
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(9);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(5)(content, {});
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		module.hot.accept("!!/home/filearts/workspace/angular-drag-drop/node_modules/css-loader/index.js!/home/filearts/workspace/angular-drag-drop/src/angular-drag-drop.css", function() {
+			var newContent = require("!!/home/filearts/workspace/angular-drag-drop/node_modules/css-loader/index.js!/home/filearts/workspace/angular-drag-drop/src/angular-drag-drop.css");
+			if(typeof newContent === 'string') newContent = [module.id, newContent, ''];
+			update(newContent);
+		});
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(10)();
+	exports.push([module.id, "[drag-container] {\n    -khtml-user-drag: element;\n    -webkit-user-drag: element;\n    -khtml-user-select: none;\n    -moz-user-select: none;\n    -webkit-user-select: none;\n    user-drag: element;\n    user-select: none;\n}\n\n[drop-container] {\n    position: relative;\n}\n\n[drop-target] {\n    position: absolute;\n    display: none;\n}\n[drop-target].drop-target-active {\n    display: block;\n    pointer-events: none;\n}\n\n.drop-target-center {\n    top: 0;\n    right: 0;\n    bottom: 0;\n    left: 0;\n}\n\n.drop-target-top {\n    top: 0;\n    right: 0;\n    height: 50%;\n    left: 0;\n}\n\n.drop-target-top-right {\n    top: 0;\n    right: 0;\n    height: 50%;\n    width: 50%;\n}\n\n.drop-target-right {\n    top: 0;\n    right: 0;\n    bottom: 0;\n    width: 50%;\n}\n\n.drop-target-bottom-right {\n    height: 50%;\n    right: 0;\n    bottom: 0;\n    width: 50%;\n}\n\n.drop-target-bottom {\n    height: 50%;\n    right: 0;\n    bottom: 0;\n    left: 0;\n}\n\n.drop-target-bottom-left {\n    height: 50%;\n    width: 50%;\n    bottom: 0;\n    left: 0;\n}\n\n.drop-target-left {\n    top: 0;\n    right: 50%;\n    bottom: 0;\n    left: 0;\n}\n\n.drop-target-top-left {\n    top: 0;\n    width: 50%;\n    height: 50%;\n    left: 0;\n}", ""]);
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function() {
+		var list = [];
+		list.toString = function toString() {
+			var result = [];
+			for(var i = 0; i < this.length; i++) {
+				var item = this[i];
+				if(item[2]) {
+					result.push("@media " + item[2] + "{" + item[1] + "}");
+				} else {
+					result.push(item[1]);
+				}
+			}
+			return result.join("");
+		};
+		return list;
+	}
 
 /***/ }
 /******/ ])
