@@ -9,7 +9,7 @@ module.exports = {
     path: "./build",
     pathInfo: false,
     publicPath: "/static/",
-    filename: "drag-and-drop.js",
+    filename: "angular-drag-drop.js",
   },
   externals: {
     angular: true,

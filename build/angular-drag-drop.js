@@ -11,41 +11,41 @@
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-/******/
+
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-/******/
+
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-/******/
+
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
 /******/ 			loaded: false
 /******/ 		};
-/******/
+
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
+
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-/******/
+
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
-/******/
+
+
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-/******/
+
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-/******/
+
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "/static/";
-/******/
+
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
@@ -75,138 +75,170 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	}])
 
-	.directive("dragContainer", ["$parse", function ($parse) {
+	.factory("$dragData", [ function () {
+	  function DragData () {
+	    this.data = null;
+	    this.type = null;
+	  }
+	  
+	  DragData.prototype.clearData = function (e) {
+	    var eventData = {
+	      $data: this.data,
+	      $type: this.type,
+	    };
+	    
+	    this.data = null;
+	    this.type = null;
+	    
+	    return eventData;
+	  };
+	  
+	  DragData.prototype.testDrag = function (e, acceptsTypes, acceptsCb) {
+	    var accepted = true;
+	    
+	    if (acceptsTypes) {
+	      if ('string' === typeof acceptsTypes) acceptsTypes = [acceptsTypes];
+	      
+	      accepted = (acceptsTypes.indexOf(this.type) >= 0);
+	    }
+	    
+	    if (acceptsCb) {
+	      accepted = acceptsCb(e, this.data, this.type);
+	    }
+	    
+	    if (accepted) {
+	      e.preventDefault();
+	      
+	    }
+	  };
+	  
+	  DragData.prototype.setData = function (e, data, type) {
+	    if (e.originalEvent) e = e.originalEvent;
+	    
+	    var eventData = {
+	      $data: data,
+	      $type: type || "application/x-plunker-drag-data",
+	    };
+	    
+	    this.data = eventData.$data;
+	    this.type = eventData.$type;
+	    
+	    try {
+	      e.dataTransfer.setData(this.type, this.data);
+	    } catch (__) {
+	      // Fallback for IE.. YAY!
+	      e.dataTransfer.setData("text", this.data);
+	    }
+	    
+	    e.dataTransfer.effectAllowed = "move";
+	    e.dataTransfer.dropEffect = "move";
+	    
+	    console.log("setData", eventData);
+	    
+	    return eventData;
+	  };
+	  
+	  return new DragData();
+	}])
+
+	.directive("dragContainer", ["$dragData", function ($dragData) {
 	  return {
 	    restrict: "A",
 	    require: "dragContainer",
+	    scope: true,
 	    controller: "DragContainerController",
 	    controllerAs: "dragContainer",
+	    bindToController: {
+	      data: "=dragContainer",
+	      dataType: "@",
+	      onDragStart: "&",
+	      onDragEnd: "&",
+	    },
 	    link: function ($scope, $element, $attrs, dragContainer) {
-	      dragContainer.init($element, $scope, {
-	        onDragStart: $parse($attrs.onDragStart),
-	        onDragEnd: $parse($attrs.onDragEnd),
+	      $element.on("dragstart", function (e) {
+	        var eventData = $dragData.setData(e, dragContainer.data, dragContainer.type);
+	        
+	        dragContainer.onDragStart(eventData);
+	        
+	        $element.addClass("drag-container-active");
+	        $scope.$broadcast("dragStart", eventData);
 	      });
 	      
-	      $element.on("dragstart", dragContainer.handleDragStart.bind(dragContainer));
-	      $element.on("dragend", dragContainer.handleDragEnd.bind(dragContainer));
-	      // $element.on("dragenter", dragContainer.handleDragEnter.bind(dragContainer));
-	      
-	      $scope.$watch($attrs.dragContainer, dragContainer.updateDragData.bind(dragContainer));
-	      $attrs.$observe("mimeType", dragContainer.updateDragType.bind(dragContainer));
-	      
+	      $element.on("dragstart", function (e) {
+	        var eventData = $dragData.clearData(e);
+	        
+	        dragContainer.onDragEnd(eventData);
+	        
+	        $element.removeClass("drag-container-active");
+	        $scope.$broadcast("dragEnd", eventData);
+	      });
+
+	      // Make the element draggable      
 	      $attrs.$set("draggable", true);
 	    }
 	  };
 	}])
 
-	.controller("DragContainerController", ["$dragging", function ($dragging) {
+	.controller("DragContainerController", ["$scope", "$dragData", function ($scope, $dragData) {
 	  var dragContainer = this;
 	  
-	  dragContainer.init = function (el, scope, callbacks) {
-	    dragContainer.el = el;
-	    dragContainer.scope = scope;
-	    dragContainer.callbacks = callbacks;
-	  };
-	  
-	  dragContainer.handleDragStart = function (e) {
-	    if (e.originalEvent) e = e.originalEvent;
-	    
-	    // console.log("handleDragStart", e);
-	    
-	    try {
-	      e.dataTransfer.setData(dragContainer.type, dragContainer.data);
-	    } catch (ex) {
-	      // Fallback for IE.. YAY!
-	      e.dataTransfer.setData("text", dragContainer.data);
-	    }
-	    e.dataTransfer.effectAllowed = "move";
-	    e.dataTransfer.dropEffect = "move";
-	    
-	    dragContainer.el.addClass("drag-container-active");
-	    dragContainer.dragging = true;
-	    
-	    $dragging.setData(dragContainer.data);
-	    $dragging.setType(dragContainer.type);
-
-	    if (dragContainer.callbacks.onDragStart) {
-	      dragContainer.callbacks.onDragStart(dragContainer.scope, {$event: e});
-	    }
-	  };
-	  
-	  dragContainer.handleDragEnd = function (e) {
-	    if (e.originalEvent) e = e.originalEvent;
-	    
-	    Angular.element(e.target).removeClass("drag-active");
-	    
-	    dragContainer.el.removeClass("drag-container-active");
-	    dragContainer.dragging = false;
-	    
-	    $dragging.setData(null);
-	    $dragging.setType(null);
-
-	    if (dragContainer.callbacks.onDragEnd) {
-	      dragContainer.callbacks.onDragEnd(dragContainer.scope, {$event: e});
-	    }
-	  };
-	  
-	  dragContainer.updateDragData = function (data) {
-	    // console.log("dragContainer.updateDragData", data);
-	    
-	    dragContainer.data = data;
-	    
-	    if (dragContainer.dragging) $dragging.setData(dragContainer.data);
-	  };
-	  
-	  dragContainer.updateDragType = function (type) {
-	    // console.log("dragContainer.updateDragType", type);
-	    
-	    dragContainer.type = type || "text/x-drag-data";
-	    
-	    if (dragContainer.dragging) $dragging.setType(dragContainer.type);
-	  };
 	}])
 
-
-	.directive("dropContainer", ["$document", "$parse", function ($document, $parse) {
+	.directive("dropContainer", ["$document", "$dragData", "$parse", function ($document, $dragData, $parse) {
 	  return {
 	    restrict: "A",
 	    require: "dropContainer",
+	    scope: false,
 	    controller: "DropContainerController",
 	    controllerAs: "dropContainer",
+	    bindToController: {
+	      onDragEnter: "&",
+	      onDragOver: "&",
+	      onDragLeave: "&",
+	      onDragEnd: "&",
+	      onDrop: "&",
+	      accept: "&",
+	      acceptsTypes: "="
+	    },
 	    link: function ($scope, $element, $attrs, dropContainer) {
-	      var bindTo = function (event) {
-	        return function (e) {
-	          return $scope.$apply(function() {
-	            return dropContainer['handle' + event](e);
-	          });
-	        };
+	      var handleDragEnd = function (e) {
+	        
 	      };
 	      
-	      var dragEnd = dropContainer.handleDragEnd.bind(dropContainer);
-	      var handleDragEnter = bindTo('DragEnter');
-	      var handleDragOver = bindTo('DragOver');
-	      var handleDragLeave = bindTo('DragLeave');
-	      var handleDrop = bindTo('Drop');
-	      
-	      
-	      dropContainer.init($element, $scope, {
-	        onDragEnter: $parse($attrs.onDragEnter),
-	        onDragOver: $parse($attrs.onDragOver),
-	        onDragLeave: $parse($attrs.onDragLeave),
-	        onDrop: $parse($attrs.onDrop),
+	      $element.on("dragenter", function (e) {
+	        var eventData = $dragData.testDrag(e, dropContainer.acceptTypes, dropContainer.accept);
+	        
+	        if (eventData) {
+	          dropContainer.onDragEnter(eventData);
+	          
+	          $element.removeClass("drop-container-active");
+	          $scope.$broadcast("dragEnter", eventData);
+	        }
 	      });
 	      
-	      $element.on("dragenter", handleDragEnter);
-	      $element.on("dragover", handleDragOver);
-	      $element.on("dragleave", handleDragLeave);
-	      $element.on("drop", handleDrop);
+	      $element.on("dragover", function (e) {
+	        var eventData = $dragData.testDrag(e, dropContainer.acceptTypes, dropContainer.accept);
+	        
+	        if (eventData) {
+	          dropContainer.onDragEnter(eventData);
+	          
+	          $element.removeClass("drop-container-active");
+	          $scope.$broadcast("dragEnter", eventData);
+	        }
+	      });
 	      
-	      $scope.$watch($attrs.accepts, dropContainer.updateMimeTypes.bind(dropContainer));
+	      $element.on("dragleave", function (e) {
+	        
+	      });
 	      
-	      $document.on("dragend", dragEnd);
+	      $element.on("drop", function (e) {
+	        
+	      });
+	      
+	      $document.on("dragend", handleDragEnd);
 	      
 	      $scope.$on("$destroy", function () {
-	        $document.off("dragend", dragEnd);
+	        $document.off("dragend", handleDragEnd);
 	      });
 	    }
 	  };
@@ -501,9 +533,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Hot Module Replacement
 	if(false) {
 		// When the styles change, update the <style> tags
-		module.hot.accept("!!/home/filearts/workspace/angular-drag-drop/node_modules/css-loader/index.js!/home/filearts/workspace/angular-drag-drop/src/angular-drag-drop.css", function() {
-			var newContent = require("!!/home/filearts/workspace/angular-drag-drop/node_modules/css-loader/index.js!/home/filearts/workspace/angular-drag-drop/src/angular-drag-drop.css");
-			if(typeof newContent === 'string') newContent = [module.id, newContent, ''];
+		module.hot.accept("!!/Users/ggoodman/Projects/Plunker.NEXT/angular-drag-drop/node_modules/css-loader/index.js!/Users/ggoodman/Projects/Plunker.NEXT/angular-drag-drop/src/angular-drag-drop.css", function() {
+			var newContent = require("!!/Users/ggoodman/Projects/Plunker.NEXT/angular-drag-drop/node_modules/css-loader/index.js!/Users/ggoodman/Projects/Plunker.NEXT/angular-drag-drop/src/angular-drag-drop.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 			update(newContent);
 		});
 		// When the module is disposed, remove the <style> tags
@@ -694,7 +726,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		if(sourceMap && typeof btoa === "function") {
 			try {
 				css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(JSON.stringify(sourceMap)) + " */";
-				css = "@import url(\"data:stylesheet/css;base64," + btoa(css) + "\")";
+				css = "@import url(\"data:text/css;base64," + btoa(css) + "\")";
 			} catch(e) {}
 		}
 
@@ -737,3 +769,4 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ }
 /******/ ])
 });
+;
