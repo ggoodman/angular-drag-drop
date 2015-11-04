@@ -303,7 +303,7 @@ Angular.module("filearts.dragDrop", [
 
     var eventData = dropContainer.updateDragTarget(e, true);
     
-    dropContainer.el.children().css({'pointer-events': null});
+    dropContainer.el.children().css({'pointer-events': ''});
     dropContainer.el.removeClass("drop-container-active");
 
     if (dropContainer.callbacks.onDragLeave) {
@@ -318,7 +318,7 @@ Angular.module("filearts.dragDrop", [
 
     dropContainer.updateDragTarget(e, true);    
 
-    dropContainer.el.children().css({'pointer-events': null});
+    dropContainer.el.children().css({'pointer-events': ''});
     dropContainer.el.removeClass("drop-container-active");
   };
   
