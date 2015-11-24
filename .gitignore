@@ -11,5 +11,4 @@ lib-cov
 .DS_Store
 
 node_modules
-bower_components
 

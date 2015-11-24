@@ -1,10 +1,11 @@
-var Angular = require("angular");
+var Angular = require('angular');
 
-module.exports =
-Angular.module("dragular.controllers.board", [
+module.exports = 'dragular.controller.board';
+
+Angular.module(module.exports, [
 ])
 
-.factory("board", ["$document", "$q", function ($document, $q) {
+.factory('board', ['$document', '$q', function ($document, $q) {
   var board = {};
   
   var loadImage = function (imgUrl) {
@@ -21,7 +22,7 @@ Angular.module("dragular.controllers.board", [
 
     img.onload = handleImageLoad;
     img.onerror = handleImageError;
-    img.crossOrigin = "anonymous";
+    img.crossOrigin = 'anonymous';
     img.src = imgUrl;
     
     return dfd.promise;
@@ -33,8 +34,8 @@ Angular.module("dragular.controllers.board", [
     
     for (var x = 0; x < board.grid; x++) {
       for (var y = 0; y < board.grid; y++) {
-        var canvas = document.createElement("canvas");
-        var ctx = canvas.getContext("2d");
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
         
         canvas.width = tileSize;
         canvas.height = tileSize;
@@ -117,7 +118,9 @@ Angular.module("dragular.controllers.board", [
   };
   
   board.swap = function (idxA, idxB) {
-    if (!board.isAdjacent(idxA, idxB)) return;
+    if (!board.isAdjacent(idxA, idxB)) {
+      return;
+    }
     
     var tmp = board.pieces[idxA];
     

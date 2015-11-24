@@ -19,8 +19,7 @@
       >
         <div class="dr-tile-empty" ng-switch-when="0"
           drop-container
-          accepts="['text/x-dragular-piece']"
-          on-drag-enter="game.move($index, game.board.pieces.indexOf(data))"
+          on-drag-enter="game.move($index, game.board.pieces.indexOf($dragData))"
         ></div>
         <div class="dr-tile-img" ng-switch-default
           ng-class="
@@ -33,8 +32,8 @@
               'background-image': 'url(' + game.board.tiles[piece] + ')',
             }
           "
-          drag-container="piece"
-          mime-type="text/x-dragular-piece"></div>
+          drag-container="piece > 0 && game.board.isAdjacent($index, game.board.pieces.indexOf(0))"
+          drag-data="piece"></div>
       </div>     
     </div>
   </body>

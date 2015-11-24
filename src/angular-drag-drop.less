@@ -1,0 +1,19 @@
+.drop-container {
+    .drag-active & {
+        position: relative;
+        
+        * {
+            pointer-events: none;
+        }
+    }
+    
+    .drag-active &:before {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 9999;
+        content: "";
+    }
+}

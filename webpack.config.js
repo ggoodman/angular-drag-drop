@@ -1,36 +1,33 @@
-var Webpack = require("webpack");
-
 module.exports = {
   cache: true,
-  entry: __dirname + "/src/angular-drag-drop.js",
+  entry: {
+    'angular-drag-drop': __dirname + "/src/angular-drag-drop.js",
+  },
   output: {
     libraryTarget: "umd",
     library: "AngularDragDrop",
-    path: "./build",
+    path: "./dist",
     pathInfo: false,
-    publicPath: "/static/",
-    filename: "drag-and-drop.js",
+    // publicPath: "/static/",
+    filename: "angular-drag-drop.js",
   },
   externals: {
-    angular: true,
+    'angular': 'angular',
   },
   module: {
-    loaders: [
-      { test: /[\/\\]angular\.js$/, loader: "exports-loader?window.angular" },
-      { test: /[\/\\]angular-animate\.js$/, loader: "ng-loader?ngAnimate" },
-      { test: /\.css$/,   loader: "style-loader!css-loader" },
-    ],
+    loaders: [{
+      test: /\.less$/,
+      loaders: ['style-loader', 'css-loader', 'autoprefixer-loader', 'less-loader'],
+    }],
     noParse: [
-      /[\/\\]angular\.js$/,
-      /[\/\\]angular-animate\.js$/,
+      require.resolve('angular'),
     ]
   },
   resolve: {
-    modulesDirectories: ["node_modules", "bower_components", "src"],
+    modulesDirectories: ["node_modules", "src"],
     root: __dirname,
     alias: {
       'angular': "angular/angular.js",
-      'angular-animate': "angular-animate/angular-animate.js",
     },
   },
 };

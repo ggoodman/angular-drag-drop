@@ -11,7 +11,7 @@ Installation
 ------------
 
 Several installation options:
-* Bower: `bower install ggoodman/angular-drag-drop --save`
+* npm: `npm install --save angular-drag-drop`
 * Download from github: [angular-drag-drop.min.js](https://raw.github.com/ggoodman/angular-drag-drop/master/dist/angular-drag-drop.min.js)
 
 
@@ -25,16 +25,16 @@ Demo
 Usage
 -----
 
-Include angular-load.js in your application.
-
-```html
-<script src="bower_components/angular-drag-drop/angular-drag-drop.js"></script>
-```
-
-Add the module `filearts.dragDrop` as a dependency to your app module:
+Using Webpack or Browserify:
 
 ```js
-var myapp = angular.module('myapp', ['filearts.dragDrop']);
+var Angular = require('angular');
+
+var mod = Angular.module('yourModule', [
+  require('angular-drag-drop'),
+]);
+
+// Now use `drag-container`, `drop-container` and `drop-target` in your templates
 ```
 
 
@@ -47,18 +47,23 @@ Define a DOM element that will become draggable and determines what the data ass
 
 ```html
 <div drag-container="model"
-  mime-type="text/plain" <!-- optional -->
-  on-drag-start="onDragStart($event, data)" <!-- optional -->
-  on-drag-end="onDragEnd($event, data)" <!-- optional -->
+  on-drag-start="ctl.handleDragStart($event, data)"
+  on-drag-end="ctl.handleDragEnd($event, data)"
 ></div>
 ```
 
 Attribute | Required? | Description
 ----------|-----------|------------
-`drag-container` | Yes | Set the scope model to associate with dragging the selected element
-`mime-type` | No | Set the mime type of the model data being dragged
+`drag-container` | No | Bind the data to be associated with dragging this element. When not specified the jqLite element on which the directive is placed will be used as the $dragData.
 
-The following callbacks are optional. Each can allow you to inject two special objects, `$event` and `data`:
+The following callbacks are optional.
+Each can allow you to inject two special objects, `$event` and `$dragData`.
+`$event` is the original browser event.
+This can be helpful for setting the browser-level drag data using `$event.dataTransfer.setData('mime/type', data)`)
+or for setting the drag image / drop effect like `$event.dataTransfer.dropEffect = 'copy'`.
+`$dragData` is the data associated with dragging this element.
+It is optionally set by providing a reference via the `drag-container` attribute.
+
 * `on-drag-start`
 * `on-drag-end`
 
@@ -66,25 +71,29 @@ The following callbacks are optional. Each can allow you to inject two special o
 
 ### `drop-container`
 
-Define a DOM element that will accept draggable elements that match the acceptable mime types.
+Define a DOM element that will accept draggable elements that match pass an optional acceptance callback.
 
 **Example**
 
 ```html
 <div drop-container
-  accepts="['text/plain']" <!-- optional -->
-  on-drag-enter="onDragStartEnter($event, data)" <!-- optional -->
-  on-drag-over="onDragOver($event, data)" <!-- optional -->
-  on-drag-leave="onDragLeave($event, data)" <!-- optional -->
-  on-drop="onDrop($event, data)" <!-- optional -->
+  drop-accepts="ctl.checkDragData($dragData)"
+  on-drag-enter="onDragStartEnter($event, $dragData)"
+  on-drag-over="onDragOver($event, $dragData)"
+  on-drag-leave="onDragLeave($event, $dragData)"
+  on-drop="onDrop($event, $dragData)"
 ></div>
 ```
 
 Attribute | Required? | Description
 ----------|-----------|------------
-`accepts` | No | Define an array of or single string representing acceptable mime-types to be dropped
+`drop-accepts` | No | Define a call to check if the data being dragged is allowed
 
-The following callbacks are optional. Each can allow you to inject two special objects, `$event` and `data`:
+The following callbacks are optional.
+Each can allow you to inject two special objects, `$event` and `$dragData`.
+`$event` is the original browser event.
+`$dragData` is the data associated with dragging this element.
+
 * `on-drag-enter`
 * `on-drag-over`
 * `on-drag-leave`
@@ -94,7 +103,11 @@ The following callbacks are optional. Each can allow you to inject two special o
 
 ### `drop-target`
 
-Define a region of the parent `drop-container` that can independently accept drag and drop events.
+Define a region of the parent `drop-container` that can independently accept drag and drop events in a logical region.
+
+This module will only consider those logical regions that have `drop-targets` bound in determining which region
+should receive events at any point in time. The algorithm to determine which logical region is active is based
+on the proximity of the cursor to the virtual center-point of each logical region.
 
 **Must be a child of a `drop-container`**
 
@@ -102,18 +115,22 @@ Define a region of the parent `drop-container` that can independently accept dra
 
 ```html
 <div drop-target="top-right"
-  on-drag-enter="onDragStartEnter($event, data)" <!-- optional -->
-  on-drag-over="onDragOver($event, data)" <!-- optional -->
-  on-drag-leave="onDragLeave($event, data)" <!-- optional -->
-  on-drop="onDrop($event, data)" <!-- optional -->
+  on-drag-enter="onDragStartEnter($event, data)"
+  on-drag-over="onDragOver($event, data)"
+  on-drag-leave="onDragLeave($event, data)"
+  on-drop="onDrop($event, data)"
 ></div>
 ```
 
 Attribute | Required? | Description
 ----------|-----------|------------
-`drop-target` | Yes | Defines the region of the parent `drop-container` that will accept events. Can be one of: `center`, `top`, `top-right`, `right`, `bottom-right`, `bottom`, `bottom-left`, `left`, `top-left`
+`drop-target` | Yes | Defines the logical region of the parent `drop-container` that will accept events. Can be one of: `center`, `top`, `top-right`, `right`, `bottom-right`, `bottom`, `bottom-left`, `left`, `top-left`
 
-The following callbacks are optional. Each can allow you to inject two special objects, `$event` and `data`:
+The following callbacks are optional.
+Each can allow you to inject two special objects, `$event` and `$dragData`.
+`$event` is the original browser event.
+`$dragData` is the data associated with dragging this element.
+
 * `on-drag-enter`
 * `on-drag-over`
 * `on-drag-leave`
