@@ -1,8 +1,8 @@
 {
   "name": "angular-drag-drop",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Dependency-free drag and drop support in Angular.js",
-  "main": "./src/angular-drag-drop.js",
+  "main": "./dist/angular-drag-drop.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack -p --output-filename='[name].min.js' && webpack --output-filename='[name].js'",
@@ -35,6 +35,6 @@
     "webpack-dev-server": "^1.14.0"
   },
   "dependencies": {
-    "angular": "^1.4.8"
+    "angular": "^1.4.8 || ^1.5.0"
   }
 }
