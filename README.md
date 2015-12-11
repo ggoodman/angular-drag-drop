@@ -1,6 +1,8 @@
 Angular drag-and-drop
 =====================
 
+[![Join the chat at https://gitter.im/ggoodman/angular-drag-drop](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ggoodman/angular-drag-drop?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Declarative drag and drop with zero dependencies in Angular.js
 
 Copyright (C) 2015, Geoff Goodman (https://github.com/ggoodman)
