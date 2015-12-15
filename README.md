@@ -47,8 +47,8 @@ Define a DOM element that will become draggable and determines what the data ass
 
 ```html
 <div drag-container="model"
-  on-drag-start="ctl.handleDragStart($event, data)"
-  on-drag-end="ctl.handleDragEnd($event, data)"
+  on-drag-start="ctl.handleDragStart($event, $dragData)"
+  on-drag-end="ctl.handleDragEnd($event, $dragData)"
 ></div>
 ```
 
@@ -115,10 +115,10 @@ on the proximity of the cursor to the virtual center-point of each logical regio
 
 ```html
 <div drop-target="top-right"
-  on-drag-enter="onDragStartEnter($event, data)"
-  on-drag-over="onDragOver($event, data)"
-  on-drag-leave="onDragLeave($event, data)"
-  on-drop="onDrop($event, data)"
+  on-drag-enter="onDragStartEnter($event, $dragData)"
+  on-drag-over="onDragOver($event, $dragData)"
+  on-drag-leave="onDragLeave($event, $dragData)"
+  on-drop="onDrop($event, $dragData)"
 ></div>
 ```
 
