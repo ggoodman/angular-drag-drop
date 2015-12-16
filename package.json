@@ -1,6 +1,6 @@
 {
   "name": "angular-drag-drop",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Dependency-free drag and drop support in Angular.js",
   "main": "./dist/angular-drag-drop.js",
   "scripts": {
@@ -35,6 +35,6 @@
     "webpack-dev-server": "^1.14.0"
   },
   "peerDependencies": {
-    "angular": "^1.4.8 || ^1.5.0"
+    "angular": "^1.4.8 || >= 1.5.0-beta.0"
   }
 }
