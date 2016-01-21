@@ -27,6 +27,17 @@ mod.factory('dragContext', ['$rootElement', function($rootElement) {
     }
 }]);
 
+mod.run(['$rootElement', '$timeout', function ($rootElement, $timeout) {
+    $rootElement[0].addEventListener('dragend', onDragEnd, true);
+    
+    
+    function onDragEnd(event) {
+        $timeout(function () {
+            $rootElement.removeClass('drag-active');
+        });
+    }
+}]);
+
 mod.directive('dragContainer', ['$rootElement', '$parse', '$timeout', 'dragContext', function($rootElement, $parse, $timeout, dragContext) {
     return {
         restrict: 'A',
