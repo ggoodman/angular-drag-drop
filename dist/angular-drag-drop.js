@@ -85,9 +85,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	mod.run(['$rootElement', '$timeout', function ($rootElement, $timeout) {
 	    $rootElement[0].addEventListener('dragend', onDragEnd, true);
+	    $rootElement[0].addEventListener('drop', onDrop, true);
 	    
 	    
 	    function onDragEnd(event) {
+	        clearDragActive();
+	    }
+	    
+	    function onDrop(event) {
+	        clearDragActive();
+	    }
+	    
+	    function clearDragActive() {
 	        $timeout(function () {
 	            $rootElement.removeClass('drag-active');
 	        });
