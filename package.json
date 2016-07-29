@@ -2,10 +2,12 @@
   "name": "angular-drag-drop",
   "version": "2.0.6",
   "description": "Dependency-free drag and drop support in Angular.js",
-  "main": "./dist/angular-drag-drop.js",
+  "main": "./build/angular-drag-drop.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack -p --output-filename='[name].min.js' && webpack --output-filename='[name].js'",
+    "build:dev": "umd -c angular-drag-drop ./src/angular-drag-drop.js ./dist/angular-drag-drop.js",
+    "build:prod": "umd -c angular-drag-drop ./src/angular-drag-drop.js | uglifyjs -o ./dist/angular-drag-drop.min.js",
+    "build": "npm run build:dev && npm run build:prod",
     "build-example": "cd example && webpack",
     "start": "cd example && webpack-dev-server"
   },
@@ -26,11 +28,14 @@
   },
   "homepage": "https://github.com/ggoodman/angular-drag-drop",
   "devDependencies": {
+    "angular": "^1.5.8",
     "autoprefixer-loader": "^3.1.0",
     "css-loader": "^0.23.0",
     "exports-loader": "^0.6.2",
     "less-loader": "^2.2.1",
     "style-loader": "^0.13.0",
+    "uglify-js": "^2.7.0",
+    "umd": "^3.0.1",
     "webpack": "^1.12.9",
     "webpack-dev-server": "^1.14.0"
   }

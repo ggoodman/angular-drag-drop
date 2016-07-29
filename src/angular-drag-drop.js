@@ -1,10 +1,9 @@
 var Angular = require('angular');
 
-require('./angular-drag-drop.less');
-
 module.exports = 'filearts.dragDrop';
 
 var mod = Angular.module(module.exports, []);
+var stylesheet = '.drag-active .drop-container{position:relative}.drag-active .drop-container *{pointer-events:none}.drag-active .drop-container:before{position:absolute;top:0;right:0;bottom:0;left:0;z-index:9999;content:""}';
 
 
 mod.factory('dragContext', ['$rootElement', function($rootElement) {
@@ -27,23 +26,61 @@ mod.factory('dragContext', ['$rootElement', function($rootElement) {
     }
 }]);
 
-mod.run(['$rootElement', '$timeout', function ($rootElement, $timeout) {
+mod.run(['$document', '$rootElement', '$timeout', function ($document, $rootElement, $timeout) {
     $rootElement[0].addEventListener('dragend', onDragEnd, true);
     $rootElement[0].addEventListener('drop', onDrop, true);
-    
-    
+
+    loadStyles(stylesheet, $document[0]);
+
+
     function onDragEnd(event) {
         clearDragActive();
     }
-    
+
     function onDrop(event) {
         clearDragActive();
     }
-    
+
     function clearDragActive() {
         $timeout(function () {
             $rootElement.removeClass('drag-active');
         });
+    }
+
+    /**
+     * Load styles into the head element
+     *
+     * Source: https://github.com/webmodules/load-styles/blob/master/index.js
+     */
+    function loadStyles(css, doc) {
+        // default to the global `document` object
+        if (!doc) doc = document;
+
+        var head = doc.head || doc.getElementsByTagName('head')[0];
+
+        // no <head> node? create one...
+        if (!head) {
+            head = doc.createElement('head');
+            var body = doc.body || doc.getElementsByTagName('body')[0];
+            if (body) {
+                body.parentNode.insertBefore(head, body);
+            }
+            else {
+                doc.documentElement.appendChild(head);
+            }
+        }
+
+        var style = doc.createElement('style');
+        style.type = 'text/css';
+        if (style.styleSheet) { // IE
+            style.styleSheet.cssText = css;
+        }
+        else { // the world
+            style.appendChild(doc.createTextNode(css));
+        }
+        head.appendChild(style);
+
+        return style;
     }
 }]);
 
@@ -67,10 +104,10 @@ mod.directive('dragContainer', ['$rootElement', '$parse', '$timeout', 'dragConte
                 $timeout(function () {
                     $rootElement.addClass('drag-active');
                 }, 0, false);
-                
+
                 dragContext.start($attrs.dragData ? $scope.$eval($attrs.dragData) : $element);
                 $element.addClass('drag-container-active');
-                
+
                 if (onDragStart) {
                     var locals = {
                         $event: e,
@@ -102,7 +139,7 @@ mod.directive('dragContainer', ['$rootElement', '$parse', '$timeout', 'dragConte
                         onDragEnd($scope, locals);
                     });
                 }
-                
+
                 if (dragContext.lastTarget) {
                     dragContext.lastTarget.$attrs.$removeClass('drag-over');
                 }
@@ -202,25 +239,25 @@ mod.directive('dropContainer', ['$document', '$parse', '$window', 'dragContext',
                         if (onDragOver) {
                             onDragOver($scope, locals);
                         }
-    
+
                         if (!closestTarget) return;
-    
+
                         if (closestTarget !== dropContainer.lastTarget) {
                             if (dropContainer.lastTarget) {
                                 $attrs.$removeClass('drop-container-' + dropContainer.lastTarget.anchor);
                             }
-    
+
                             $attrs.$addClass('drop-container-' + closestTarget.anchor);
-    
+
                             if (dropContainer.lastTarget) {
                                 dropContainer.lastTarget.handleDragLeave(e, locals);
                             }
-    
+
                             closestTarget.handleDragEnter(e, locals);
-    
+
                             dropContainer.lastTarget = closestTarget;
                         }
-    
+
                         closestTarget.handleDragOver(e);
                     });
                 }
@@ -238,14 +275,14 @@ mod.directive('dropContainer', ['$document', '$parse', '$window', 'dragContext',
                     if (onDragLeave) {
                         onDragLeave($scope, locals);
                     }
-    
+
                     if (dropContainer.lastTarget) {
                         dropContainer.lastTarget.handleDragLeave(e, locals);
                     }
-    
+
                     if (dropContainer.lastTarget) {
                         $attrs.$removeClass('drop-container-' + dropContainer.lastTarget.anchor);
-    
+
                         dropContainer.lastTarget = null;
                     }
                 });
@@ -270,7 +307,7 @@ mod.directive('dropContainer', ['$document', '$parse', '$window', 'dragContext',
                         if (onDrop) {
                             onDrop($scope, locals);
                         }
-    
+
                         if (dropContainer.lastTarget) {
                             dropContainer.lastTarget.handleDrop(e, locals);
                         }
