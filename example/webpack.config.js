@@ -27,5 +27,3 @@ module.exports = {
         root: __dirname,
     },
 };
-
-console.log(module.exports);
