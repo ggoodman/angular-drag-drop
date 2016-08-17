@@ -2,7 +2,7 @@
   "name": "angular-drag-drop",
   "version": "3.0.0",
   "description": "Dependency-free drag and drop support in Angular.js",
-  "main": "./build/angular-drag-drop.min.js",
+  "main": "./src/angular-drag-drop.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:dev": "umd -c angular-drag-drop ./src/angular-drag-drop.js ./dist/angular-drag-drop.js",
