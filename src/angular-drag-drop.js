@@ -30,16 +30,16 @@ mod.factory('dragContext', ['$rootElement', function($rootElement) {
 mod.run(['$rootElement', '$timeout', function ($rootElement, $timeout) {
     $rootElement[0].addEventListener('dragend', onDragEnd, true);
     $rootElement[0].addEventListener('drop', onDrop, true);
-    
-    
+
+
     function onDragEnd(event) {
         clearDragActive();
     }
-    
+
     function onDrop(event) {
         clearDragActive();
     }
-    
+
     function clearDragActive() {
         $timeout(function () {
             $rootElement.removeClass('drag-active');
@@ -67,10 +67,11 @@ mod.directive('dragContainer', ['$rootElement', '$parse', '$timeout', 'dragConte
                 $timeout(function () {
                     $rootElement.addClass('drag-active');
                 }, 0, false);
-                
+
+                e.dataTransfer.setData('text', 'anything');
                 dragContext.start($attrs.dragData ? $scope.$eval($attrs.dragData) : $element);
                 $element.addClass('drag-container-active');
-                
+
                 if (onDragStart) {
                     var locals = {
                         $event: e,
@@ -102,7 +103,7 @@ mod.directive('dragContainer', ['$rootElement', '$parse', '$timeout', 'dragConte
                         onDragEnd($scope, locals);
                     });
                 }
-                
+
                 if (dragContext.lastTarget) {
                     dragContext.lastTarget.$attrs.$removeClass('drag-over');
                 }
@@ -202,25 +203,25 @@ mod.directive('dropContainer', ['$document', '$parse', '$window', 'dragContext',
                         if (onDragOver) {
                             onDragOver($scope, locals);
                         }
-    
+
                         if (!closestTarget) return;
-    
+
                         if (closestTarget !== dropContainer.lastTarget) {
                             if (dropContainer.lastTarget) {
                                 $attrs.$removeClass('drop-container-' + dropContainer.lastTarget.anchor);
                             }
-    
+
                             $attrs.$addClass('drop-container-' + closestTarget.anchor);
-    
+
                             if (dropContainer.lastTarget) {
                                 dropContainer.lastTarget.handleDragLeave(e, locals);
                             }
-    
+
                             closestTarget.handleDragEnter(e, locals);
-    
+
                             dropContainer.lastTarget = closestTarget;
                         }
-    
+
                         closestTarget.handleDragOver(e);
                     });
                 }
@@ -238,14 +239,14 @@ mod.directive('dropContainer', ['$document', '$parse', '$window', 'dragContext',
                     if (onDragLeave) {
                         onDragLeave($scope, locals);
                     }
-    
+
                     if (dropContainer.lastTarget) {
                         dropContainer.lastTarget.handleDragLeave(e, locals);
                     }
-    
+
                     if (dropContainer.lastTarget) {
                         $attrs.$removeClass('drop-container-' + dropContainer.lastTarget.anchor);
-    
+
                         dropContainer.lastTarget = null;
                     }
                 });
@@ -270,7 +271,7 @@ mod.directive('dropContainer', ['$document', '$parse', '$window', 'dragContext',
                         if (onDrop) {
                             onDrop($scope, locals);
                         }
-    
+
                         if (dropContainer.lastTarget) {
                             dropContainer.lastTarget.handleDrop(e, locals);
                         }
