@@ -104,7 +104,7 @@ mod.directive('dragContainer', ['$rootElement', '$parse', '$timeout', 'dragConte
                 $timeout(function () {
                     $rootElement.addClass('drag-active');
                 }, 0, false);
-
+                
                 dragContext.start($attrs.dragData ? $scope.$eval($attrs.dragData) : $element);
                 $element.addClass('drag-container-active');
 
@@ -117,6 +117,13 @@ mod.directive('dragContainer', ['$rootElement', '$parse', '$timeout', 'dragConte
                     $scope.$apply(function() {
                         onDragStart($scope, locals);
                     });
+                }
+
+                if (e.dataTransfer) {
+                    if ((!e.dataTransfer.items || !e.dataTransfer.items.length)
+                        && (!e.dataTransfer.files || !e.dataTransfer.files.length)) {
+                            e.dataTransfer.setData('text', $element.text());
+                        }
                 }
             }
 
