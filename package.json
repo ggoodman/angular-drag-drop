@@ -1,6 +1,6 @@
 {
   "name": "angular-drag-drop",
-  "version": "2.0.6",
+  "version": "3.0.0",
   "description": "Dependency-free drag and drop support in Angular.js",
   "main": "./build/angular-drag-drop.min.js",
   "scripts": {
