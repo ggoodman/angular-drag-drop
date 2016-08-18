@@ -123,7 +123,7 @@ mod.directive('dragContainer', ['$rootElement', '$parse', '$timeout', 'dragConte
                 if (e.dataTransfer) {
                     if ((!e.dataTransfer.items || !e.dataTransfer.items.length)
                         && (!e.dataTransfer.files || !e.dataTransfer.files.length)) {
-                            e.dataTransfer.setData('text', $element.text());
+                            e.dataTransfer.setData('text', '');
                         }
                 }
             }
