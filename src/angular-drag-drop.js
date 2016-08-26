@@ -1,6 +1,12 @@
-var Angular = require('angular');
+var Angular;
 
-module.exports = 'filearts.dragDrop';
+if (typeof angular === 'object') {
+    Angular = angular;
+} else {
+    Angular = require('angular');
+}
+
+module.exports = 'angular-drag-drop';
 
 var mod = Angular.module(module.exports, []);
 var stylesheet = '.drag-active .drop-container{position:relative}.drag-active .drop-container *{pointer-events:none}.drag-active .drop-container:before{position:absolute;top:0;right:0;bottom:0;left:0;z-index:9999;content:""}';
@@ -101,10 +107,11 @@ mod.directive('dragContainer', ['$rootElement', '$parse', '$timeout', 'dragConte
             $element.on('dragend', handleDragEnd);
 
             function handleDragStart(e) {
+                e.originalEvent.dataTransfer.setData('text', 'anything');
                 $timeout(function () {
                     $rootElement.addClass('drag-active');
                 }, 0, false);
-                
+
                 dragContext.start($attrs.dragData ? $scope.$eval($attrs.dragData) : $element);
                 $element.addClass('drag-container-active');
 
