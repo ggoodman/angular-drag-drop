@@ -101,10 +101,11 @@ mod.directive('dragContainer', ['$rootElement', '$parse', '$timeout', 'dragConte
             $element.on('dragend', handleDragEnd);
 
             function handleDragStart(e) {
+                e.originalEvent.dataTransfer.setData('text', 'anything');
                 $timeout(function () {
                     $rootElement.addClass('drag-active');
                 }, 0, false);
-                
+
                 dragContext.start($attrs.dragData ? $scope.$eval($attrs.dragData) : $element);
                 $element.addClass('drag-container-active');
 
