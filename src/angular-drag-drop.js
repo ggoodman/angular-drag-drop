@@ -1,4 +1,10 @@
-var Angular = require('angular');
+var Angular;
+
+if (typeof angular === 'object') {
+    Angular = angular;
+} else {
+    Angular = require('angular');
+}
 
 module.exports = 'angular-drag-drop';
 
