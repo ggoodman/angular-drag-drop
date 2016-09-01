@@ -119,11 +119,13 @@ mod.directive('dragContainer', ['$rootElement', '$parse', '$timeout', 'dragConte
                         onDragStart($scope, locals);
                     });
                 }
+                
+                var targetEvent = e.originalEvent || e;
 
-                if (e.originalEvent.dataTransfer) {
-                    if ((!e.originalEvent.dataTransfer.items || !e.originalEvent.dataTransfer.items.length)
-                        && (!e.originalEvent.dataTransfer.files || !e.originalEvent.dataTransfer.files.length)) {
-                        e.originalEvent.dataTransfer.setData('text', '');
+                if (targetEvent.dataTransfer) {
+                    if ((!targetEvent.dataTransfer.items || !targetEvent.dataTransfer.items.length)
+                        && (!targetEvent.dataTransfer.files || !targetEvent.dataTransfer.files.length)) {
+                        targetEvent.dataTransfer.setData('text', '');
                     }
                 }
             }
