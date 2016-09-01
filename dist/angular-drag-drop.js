@@ -102,7 +102,6 @@ mod.directive('dragContainer', ['$rootElement', '$parse', '$timeout', 'dragConte
             $element.on('dragend', handleDragEnd);
 
             function handleDragStart(e) {
-                e.originalEvent.dataTransfer.setData('text', 'anything');
                 $timeout(function () {
                     $rootElement.addClass('drag-active');
                 }, 0, false);
@@ -121,11 +120,11 @@ mod.directive('dragContainer', ['$rootElement', '$parse', '$timeout', 'dragConte
                     });
                 }
 
-                if (e.dataTransfer) {
-                    if ((!e.dataTransfer.items || !e.dataTransfer.items.length)
-                        && (!e.dataTransfer.files || !e.dataTransfer.files.length)) {
-                            e.dataTransfer.setData('text', '');
-                        }
+                if (e.originalEvent.dataTransfer) {
+                    if ((!e.originalEvent.dataTransfer.items || !e.originalEvent.dataTransfer.items.length)
+                        && (!e.originalEvent.dataTransfer.files || !e.originalEvent.dataTransfer.files.length)) {
+                        e.originalEvent.dataTransfer.setData('text', '');
+                    }
                 }
             }
 
