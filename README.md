@@ -48,7 +48,8 @@ Define a DOM element that will become draggable and determines what the data ass
 **Example**
 
 ```html
-<div drag-container="model"
+<div drag-container="true"
+  drag-data="model"
   on-drag-start="ctl.handleDragStart($event, $dragData)"
   on-drag-end="ctl.handleDragEnd($event, $dragData)"
 ></div>
@@ -56,7 +57,8 @@ Define a DOM element that will become draggable and determines what the data ass
 
 Attribute | Required? | Description
 ----------|-----------|------------
-`drag-container` | No | Bind the data to be associated with dragging this element. When not specified the jqLite element on which the directive is placed will be used as the $dragData.
+`drag-container` | Yes | Defines when the drag action is allowed or blocked for the draggable. Can be true or false.
+`drag-data` | No | Bind the data to be associated with dragging this element. When not specified the jqLite element on which the directive is placed will be used as the $dragData.
 
 The following callbacks are optional.
 Each can allow you to inject two special objects, `$event` and `$dragData`.
