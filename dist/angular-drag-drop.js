@@ -24,7 +24,7 @@ mod.factory('dragContext', ['$rootElement', function($rootElement) {
         return Angular.extend(context, {
             data: null,
             reset: reset,
-            start: start
+            start: start,
         });
     }
 
