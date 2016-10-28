@@ -1,7 +1,15 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.angularDragDrop = f()}})(function(){var define,module,exports;module={exports:(exports={})};
-var Angular = require('angular');
+var Angular;
 
-module.exports = 'filearts.dragDrop';
+if (typeof angular === 'object') {
+    // Angular is available globally
+    Angular = angular;
+} else {
+    // Using webpack
+    Angular = require('angular');
+}
+
+module.exports = 'angular-drag-drop';
 
 var mod = Angular.module(module.exports, []);
 var stylesheet = '.drag-active .drop-container{position:relative}.drag-active .drop-container *{pointer-events:none}.drag-active .drop-container:before{position:absolute;top:0;right:0;bottom:0;left:0;z-index:9999;content:""}';
@@ -16,7 +24,7 @@ mod.factory('dragContext', ['$rootElement', function($rootElement) {
         return Angular.extend(context, {
             data: null,
             reset: reset,
-            start: start,
+            start: start
         });
     }
 
@@ -119,7 +127,7 @@ mod.directive('dragContainer', ['$rootElement', '$parse', '$timeout', 'dragConte
                         onDragStart($scope, locals);
                     });
                 }
-                
+
                 var targetEvent = e.originalEvent || e;
 
                 if (targetEvent.dataTransfer) {
