@@ -1,0 +1,24 @@
+{
+  "name": "ggoodman-angular-drag-drop",
+  "version": "3.0.5",
+  "description": "Dependency-free drag and drop support in Angular.js",
+  "main": "./dist/angular-drag-drop.js",
+  "authors": [
+    "Geoffrey Goodman"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "angularjs",
+    "drag",
+    "drop"
+  ],
+  "homepage": "https://github.com/ggoodman/angular-drag-drop",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

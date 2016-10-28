@@ -14,6 +14,7 @@ Installation
 
 Several installation options:
 * npm: `npm install --save angular-drag-drop`
+* bower: `bower install --save ggoodman-angular-drag-drop`
 * Download from github: [angular-drag-drop.min.js](https://raw.github.com/ggoodman/angular-drag-drop/master/dist/angular-drag-drop.min.js)
 
 
