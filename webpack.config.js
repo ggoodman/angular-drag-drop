@@ -1,30 +1,38 @@
-module.exports = {
+var webpack = require('webpack');
+
+var devConfig = {
     cache: true,
     entry: {
-        'angular-drag-drop': __dirname + "/src/angular-drag-drop.js",
+        'angular-drag-drop': __dirname + "/src/angular-drag-drop.js"
     },
     output: {
         libraryTarget: "umd",
         library: "AngularDragDrop",
         path: "./dist",
-        pathInfo: false,
-        // publicPath: "/static/",
-        filename: "angular-drag-drop.js",
+        filename: "angular-drag-drop.js"
     },
     externals: {
-        'angular': 'angular',
-    },
-    module: {
-        loaders: [{
-            test: /\.less$/,
-            loaders: ['style-loader', 'css-loader', 'autoprefixer-loader', 'less-loader'],
-        }],
-        // noParse: [
-        //   require.resolve('angular'),
-        // ]
-    },
-    resolve: {
-        modulesDirectories: ["node_modules", "src"],
-        root: __dirname,
-    },
+        'angular': 'angular'
+    }
 };
+
+var prodConfig = {
+    cache: true,
+    entry: {
+        'angular-drag-drop': __dirname + "/src/angular-drag-drop.js"
+    },
+    output: {
+        libraryTarget: "umd",
+        library: "AngularDragDrop",
+        path: "./dist",
+        filename: "angular-drag-drop.min.js"
+    },
+    externals: {
+        'angular': 'angular'
+    },
+    plugins: [
+        new webpack.optimize.UglifyJsPlugin()
+    ]
+};
+
+module.exports = [devConfig, prodConfig];

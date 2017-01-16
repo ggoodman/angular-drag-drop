@@ -5,9 +5,7 @@
   "main": "./src/angular-drag-drop.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:dev": "umd -c angular-drag-drop ./src/angular-drag-drop.js ./dist/angular-drag-drop.js",
-    "build:prod": "umd -c angular-drag-drop ./src/angular-drag-drop.js | uglifyjs -o ./dist/angular-drag-drop.min.js",
-    "build": "npm run build:dev && npm run build:prod",
+    "build": "webpack --config webpack.config.js",
     "build-example": "cd example && webpack",
     "start": "cd example && webpack-dev-server"
   },
@@ -34,8 +32,6 @@
     "exports-loader": "^0.6.2",
     "less-loader": "^2.2.1",
     "style-loader": "^0.13.0",
-    "uglify-js": "^2.7.0",
-    "umd": "^3.0.1",
     "webpack": "^1.12.9",
     "webpack-dev-server": "^1.14.0"
   }
