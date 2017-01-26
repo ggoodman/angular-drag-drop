@@ -6,7 +6,7 @@ var mod = Angular.module(module.exports, []);
 var stylesheet = '.drag-active .drop-container{position:relative}.drag-active .drop-container *{pointer-events:none}.drag-active .drop-container:before{position:absolute;top:0;right:0;bottom:0;left:0;z-index:9999;content:""}';
 
 
-mod.factory('dragContext', ['$rootElement', function($rootElement) {
+mod.factory('dragContext', [function() {
     var context = {};
 
     return reset();
@@ -33,11 +33,11 @@ mod.run(['$document', '$rootElement', '$timeout', function ($document, $rootElem
     loadStyles(stylesheet, $document[0]);
 
 
-    function onDragEnd(event) {
+    function onDragEnd() {
         clearDragActive();
     }
 
-    function onDrop(event) {
+    function onDrop() {
         clearDragActive();
     }
 

@@ -1,6 +1,8 @@
-var webpack = require('webpack');
+'use strict';
 
-var devConfig = {
+const webpack = require('webpack');
+
+const devConfig = {
     cache: true,
     entry: {
         'angular-drag-drop': __dirname + "/src/angular-drag-drop.js"
@@ -16,7 +18,7 @@ var devConfig = {
     }
 };
 
-var prodConfig = {
+const prodConfig = {
     cache: true,
     entry: {
         'angular-drag-drop': __dirname + "/src/angular-drag-drop.js"
